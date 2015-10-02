@@ -28,9 +28,19 @@ Xero.prototype.call = function(method, path, body, callback) {
     if (method && method !== 'GET' && body) {
         if (Buffer.isBuffer(body)) {
             post_body = body;
+            // console.log('post_body in if: ', post_body);
         } else {
             var root = path.match(/([^\/\?]+)/)[1];
-            post_body = new EasyXml({rootElement: inflect.singularize(root), rootArray: root, manifest: true}).render(body);
+            var splitPath = path.split('/');
+            // console.log('root: ', root);
+            // console.log('path: ', path);
+            // console.log('path.match(/([^\/\?]+)/) ', path.match(/([^\/\?]+)/));
+            // console.log('inflect.singularize(root): ', inflect.singularize(root));
+            // console.log('body: ', body);
+            // console.log('splitPath: ', splitPath);
+            // console.log('splitPath.length: ', splitPath.length);
+            var rootElement = splitPath.length === 4 ? splitPath[3] : inflect.singularize(root);
+            post_body = new EasyXml({rootElement: rootElement, rootArray: root, manifest: true}).render(body);
             content_type = 'application/xml';
         }
     }
@@ -48,6 +58,8 @@ Xero.prototype.call = function(method, path, body, callback) {
             }
         });
     };
+    // console.log('self.key, self.secret, method, XERO_API_URL + path, null, post_body, content_type, callback ? process : null');
+    // console.log(self.key, self.secret, method, XERO_API_URL + path, null, post_body, content_type, callback ? process : null);
     return self.oa._performSecureRequest(self.key, self.secret, method, XERO_API_URL + path, null, post_body, content_type, callback ? process : null);
 }
 
