@@ -32,15 +32,11 @@ Xero.prototype.call = function(method, path, body, callback) {
         } else {
             var root = path.match(/([^\/\?]+)/)[1];
             var splitPath = path.split('/');
-            // console.log('root: ', root);
-            // console.log('path: ', path);
-            // console.log('path.match(/([^\/\?]+)/) ', path.match(/([^\/\?]+)/));
-            // console.log('inflect.singularize(root): ', inflect.singularize(root));
-            // console.log('body: ', body);
-            // console.log('splitPath: ', splitPath);
-            // console.log('splitPath.length: ', splitPath.length);
             var rootElement = splitPath.length === 4 ? splitPath[3] : inflect.singularize(root);
-            post_body = new EasyXml({rootElement: rootElement, rootArray: root, manifest: true}).render(body);
+
+            //unwrappedArrays is more explicit & less magic. Should try to use this everywhere eventually.
+            var unwrappedArrays = root === 'Invoices' ? true : false;
+            post_body = new EasyXml({rootElement: rootElement, rootArray: root, unwrappedArrays: unwrappedArrays, manifest: true}).render(body);
             content_type = 'application/xml';
         }
     }
